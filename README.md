@@ -1,25 +1,27 @@
 # Scala Payment Gateway
 
-A backend project built with Scala 3 and ZIO to learn and demonstrate modern backend development practices.
+A backend project built with Scala 3 and the ZIO ecosystem to learn and demonstrate modern backend development practices through a production-inspired payment gateway.
 
 ## Features
 
-- Console application using ZIO
-- Application entry point with `ZIOAppDefault`
-- Built with Scala 3
-- Uses sbt as the build tool
+* HTTP server built with ZIO HTTP
+* Root endpoint available at `/`
+* Built with Scala 3
+* Uses ZIO for effect management
+* Uses sbt as the build tool
 
 ## Technology Stack
 
-- Scala 3
-- ZIO
-- JDK 21
-- sbt
+* Scala 3
+* ZIO
+* ZIO HTTP
+* JDK 21
+* sbt
 
 ## Prerequisites
 
-- JDK 21
-- sbt
+* JDK 21
+* sbt
 
 ## Running the Project
 
@@ -27,16 +29,25 @@ A backend project built with Scala 3 and ZIO to learn and demonstrate modern bac
 sbt run
 ```
 
-## Output
+The application starts an HTTP server on port `8080`.
+
+## Available Endpoint
+
+### GET /
+
+Returns a simple response indicating that the application is running.
+
+**Response**
 
 ```text
-===================================
-   Scala Payment Gateway
-===================================
-
-Welcome!
-Please enter your name:
-Hash
-Hello, Hash!
-The Payment Gateway is starting...
+Scala Payment Gateway is running!
 ```
+
+## Project Status
+
+Current implementation includes:
+
+* Project initialization
+* ZIO application entry point
+* ZIO HTTP server
+* Root HTTP endpoint
