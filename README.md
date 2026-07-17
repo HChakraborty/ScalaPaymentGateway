@@ -1,27 +1,38 @@
 # Scala Payment Gateway
 
-A backend project built with Scala 3 and the ZIO ecosystem to learn and demonstrate modern backend development practices through a production-inspired payment gateway.
+A production-inspired backend project built with Scala 3 and the ZIO ecosystem to learn modern functional backend development by incrementally building a payment gateway.
+
+The project focuses on understanding backend architecture, functional programming, and enterprise application design rather than simply integrating technologies.
+
+---
 
 ## Features
 
-* HTTP server built with ZIO HTTP
-* Root endpoint available at `/`
-* Built with Scala 3
-* Uses ZIO for effect management
-* Uses sbt as the build tool
+- HTTP server built with ZIO HTTP
+- Type-safe API endpoint definition using Tapir
+- Health endpoint available at `/health`
+- Functional programming with ZIO
+- Modular project structure for future expansion
+
+---
 
 ## Technology Stack
 
-* Scala 3
-* ZIO
-* ZIO HTTP
-* JDK 21
-* sbt
+- Scala 3
+- ZIO
+- ZIO HTTP
+- Tapir
+- JDK 21
+- sbt
+
+---
 
 ## Prerequisites
 
-* JDK 21
-* sbt
+- JDK 21
+- sbt
+
+---
 
 ## Running the Project
 
@@ -29,13 +40,15 @@ A backend project built with Scala 3 and the ZIO ecosystem to learn and demonstr
 sbt run
 ```
 
-The application starts an HTTP server on port `8080`.
+The application starts an HTTP server on port **8080**.
+
+---
 
 ## Available Endpoint
 
-### GET /
+### GET /health
 
-Returns a simple response indicating that the application is running.
+Returns the current application status.
 
 **Response**
 
@@ -43,11 +56,60 @@ Returns a simple response indicating that the application is running.
 Scala Payment Gateway is running!
 ```
 
-## Project Status
+---
 
-Current implementation includes:
+## Current Architecture
 
-* Project initialization
-* ZIO application entry point
-* ZIO HTTP server
-* Root HTTP endpoint
+```
+Browser
+    │
+GET /health
+    │
+    ▼
+Tapir Endpoint Definition
+    │
+    ▼
+Server Logic
+    │
+    ▼
+ZioHttpInterpreter
+    │
+    ▼
+ZIO HTTP Server
+    │
+    ▼
+HTTP Response
+```
+
+---
+
+## Current Project Structure
+
+```
+src/
+└── main/
+    └── scala/
+        └── paymentgateway/
+            ├── Main.scala
+            │
+            ├── infrastructure/
+            │   └── http/
+            │       └── HttpServer.scala
+            │
+            └── health/
+                └── api/
+                    └── HealthEndpoints.scala
+```
+
+---
+
+## Current Progress
+
+### Completed
+
+- Project initialization
+- ZIO application entry point
+- ZIO HTTP server
+- Tapir endpoint definition
+- Health endpoint
+- Tapir → ZIO HTTP integration
