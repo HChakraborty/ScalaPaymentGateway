@@ -9,8 +9,12 @@ The project focuses on understanding backend architecture, functional programmin
 ## Features
 
 - HTTP server built with ZIO HTTP
-- Type-safe API endpoint definition using Tapir
-- Health endpoint available at `/health`
+- Type-safe REST APIs using Tapir
+- Automatic OpenAPI specification generation
+- Interactive Swagger UI documentation
+- Health endpoint
+- Payment creation endpoint
+- JSON request and response models using ZIO JSON
 - Functional programming with ZIO
 - Modular project structure for future expansion
 
@@ -22,6 +26,8 @@ The project focuses on understanding backend architecture, functional programmin
 - ZIO
 - ZIO HTTP
 - Tapir
+- Swagger UI Bundle
+- ZIO JSON
 - JDK 21
 - sbt
 
@@ -44,7 +50,7 @@ The application starts an HTTP server on port **8080**.
 
 ---
 
-## Available Endpoint
+## Available Endpoints
 
 ### GET /health
 
@@ -58,27 +64,62 @@ Scala Payment Gateway is running!
 
 ---
 
+### POST /payments
+
+Creates a new payment.
+
+**Request**
+
+```json
+{
+  "merchantId": "merchant-001",
+  "amount": 999.99
+}
+```
+
+**Response**
+
+```json
+{
+  "paymentId": "e0dbb26f-4b4d-4f1d-9e94-f8d08f8b6b95",
+  "merchantId": "merchant-001",
+  "amount": 999.99,
+  "status": "PENDING"
+}
+```
+
+---
+
+### Swagger UI
+
+Interactive API documentation is available at:
+
+```
+http://localhost:8080/docs
+```
+
+---
+
 ## Current Architecture
 
 ```
-Browser
-    │
-GET /health
-    │
-    ▼
-Tapir Endpoint Definition
-    │
-    ▼
-Server Logic
-    │
-    ▼
-ZioHttpInterpreter
-    │
-    ▼
-ZIO HTTP Server
-    │
-    ▼
-HTTP Response
+                  Browser
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+   GET /health             POST /payments
+        │                         │
+        └────────────┬────────────┘
+                     │
+             Tapir Endpoint
+                     │
+              Server Logic
+                     │
+         ZioHttpInterpreter
+                     │
+             ZIO HTTP Server
+                     │
+               HTTP Response
 ```
 
 ---
@@ -96,20 +137,16 @@ src/
             │   └── http/
             │       └── HttpServer.scala
             │
-            └── health/
-                └── api/
-                    └── HealthEndpoints.scala
+            ├── health/
+            │   └── api/
+            │       └── HealthEndpoints.scala
+            │
+            └── payment/
+                ├── api/
+                │   └── PaymentEndpoints.scala
+                │
+                └── model/
+                    ├── CreatePaymentRequest.scala
+                    └── PaymentResponse.scala
 ```
 
----
-
-## Current Progress
-
-### Completed
-
-- Project initialization
-- ZIO application entry point
-- ZIO HTTP server
-- Tapir endpoint definition
-- Health endpoint
-- Tapir → ZIO HTTP integration

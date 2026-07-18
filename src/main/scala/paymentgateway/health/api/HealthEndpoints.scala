@@ -1,8 +1,8 @@
 package paymentgateway.health.api
 
-import sttp.tapir.ztapir.*
+import sttp.tapir.ztapir._
 
-import zio.*
+import zio._
 
 object HealthEndpoints {
 
