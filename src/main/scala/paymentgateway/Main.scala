@@ -6,11 +6,12 @@ import zio.http._
 
 object Main extends ZIOAppDefault {
 
-    override def run = 
-      Server
-        .serve(HttpServer.app)
-        .provide(Server.default)
-        .onInterrupt(
-          Console.printLine("\nShutting down Payment Gateway...").orDie
-        )
+  override def run =
+    Server
+      .serve(HttpServer.app)
+      .provide(
+        Server.default)
+      .onInterrupt(
+        Console.printLine("\nShutting down Payment Gateway...").orDie
+      )
 }

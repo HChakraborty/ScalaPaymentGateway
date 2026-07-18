@@ -2,23 +2,28 @@ package paymentgateway.infrastructure.http
 
 import paymentgateway.health.api.HealthEndpoints
 
-import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.server.ziohttp.ZioHttpInterpreter
-import sttp.tapir.ztapir.RichZEndpoint
+import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 import zio.*
 
+import sttp.tapir.ztapir.*
+
 object HttpServer {
 
-    val healthRoute: ServerEndpoint[Any, Task] =
-        HealthEndpoints.healthEndpoint
-        .zServerLogic {
-            _ => ZIO.succeed("Scala Payment Gateway is running!")
-        }
+  private val endpoints = List(
+    HealthEndpoints.routes.widen
+  )
 
-    val app =
-        ZioHttpInterpreter().toHttp(
-            List(healthRoute)
-        )
+  private val openApi = SwaggerInterpreter()
+    .fromServerEndpoints(endpoints, "Scala Payment Gateway", "0.1.0")
+
+  val app =
+    ZioHttpInterpreter().toHttp(
+      endpoints
+    ) ++
+      ZioHttpInterpreter().toHttp(
+        openApi
+      )
 
 }
