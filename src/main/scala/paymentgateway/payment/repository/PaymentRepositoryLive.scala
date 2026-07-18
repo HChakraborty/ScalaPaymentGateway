@@ -3,7 +3,9 @@ package paymentgateway.payment.repository
 import zio.* 
 
 import scala.collection.mutable.ListBuffer
-import paymentgateway.payment.model.PaymentResponse
+
+import paymentgateway.payment.model.*
+
 
 object PaymentRepositoryLive extends PaymentRepository {
 
@@ -12,20 +14,24 @@ object PaymentRepositoryLive extends PaymentRepository {
 
     override def create(
         payment: PaymentResponse
-    ): Task[PaymentResponse] = {
+    ): IO[PaymentError, PaymentResponse] = {
         payments += payment
         ZIO.succeed(payment)
     }
 
     override def findById(
         paymentId: String
-    ): Task[Option[PaymentResponse]] = {
-        ZIO.succeed(
-            payments.find(_.paymentId == paymentId)
-        )
+    ): IO[PaymentError, PaymentResponse] = {
+       
+        payments.find(_.paymentId == paymentId) match
+            case Some(payment) =>
+                ZIO.succeed(payment)
+            case None => 
+                ZIO.fail(PaymentError.PaymentNotFound) 
+        
     }
 
-    override def findAll(): Task[List[PaymentResponse]] = {
+    override def findAll(): IO[PaymentError, List[PaymentResponse]]= {
         ZIO.succeed(
             payments.toList
         )

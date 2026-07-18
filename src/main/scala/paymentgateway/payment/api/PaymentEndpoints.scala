@@ -17,14 +17,19 @@ object PaymentEndpoints {
     endpoint.post
       .in("payments")
       .in(jsonBody[CreatePaymentRequest])
+      .errorOut(jsonBody[ErrorResponse])
       .out(jsonBody[PaymentResponse])
 
-  val routes: ZServerEndpoint[Any, Any] =
-    createPaymentRequest
-      .zServerLogic { request =>
-        {
-          PaymentService.createPayment(request).mapError(_ => ())
-        }
-      }
+  val getPaymentByIdRequest =
+    endpoint.get
+      .in("payments" / path[String]("paymentId"))
+      .errorOut(jsonBody[ErrorResponse])
+      .out(jsonBody[PaymentResponse])
+
+  val getAllPaymentsRequest =
+    endpoint.get
+      .in("payments")
+      .errorOut(jsonBody[ErrorResponse])
+      .out(jsonBody[List[PaymentResponse]])
 
 }

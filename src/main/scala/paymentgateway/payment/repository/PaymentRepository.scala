@@ -1,18 +1,19 @@
 package paymentgateway.payment.repository
 
-import paymentgateway.payment.model.PaymentResponse
+import paymentgateway.payment.model.*
+
 import zio.*
 
 trait PaymentRepository {
 
   def create(
       response: PaymentResponse
-  ): Task[PaymentResponse]
+  ): IO[PaymentError, PaymentResponse]
 
   def findById(
       paymentId: String
-  ): Task[Option[PaymentResponse]]
+  ): IO[PaymentError, PaymentResponse]
 
-  def findAll(): Task[List[PaymentResponse]]
+  def findAll(): IO[PaymentError, List[PaymentResponse]]
 
 }

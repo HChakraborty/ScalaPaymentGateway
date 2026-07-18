@@ -10,7 +10,7 @@ import paymentgateway.payment.repository.PaymentRepositoryLive
 object PaymentService {
   def createPayment(
       request: CreatePaymentRequest
-  ): Task[PaymentResponse] = {
+  ): IO[PaymentError, PaymentResponse] = {
 
     val response =
       PaymentResponse(
@@ -25,4 +25,12 @@ object PaymentService {
     ZIO.succeed(response)
 
   }
+
+  def getPaymentById(
+    paymentId: String
+  ): IO[PaymentError, PaymentResponse] = {
+    PaymentRepositoryLive.findById(paymentId)
+  }
+
+  def getAllPayments(): IO[PaymentError, List[PaymentResponse]] = PaymentRepositoryLive.findAll()
 }

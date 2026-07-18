@@ -12,11 +12,14 @@ The project focuses on understanding backend architecture, functional programmin
 - Type-safe REST APIs using Tapir
 - Automatic OpenAPI specification generation
 - Interactive Swagger UI documentation
-- Health endpoint
-- Payment creation endpoint
-- JSON request and response models using ZIO JSON
 - Functional programming with ZIO
-- Modular project structure for future expansion
+- JSON serialization using ZIO JSON
+- Layered backend architecture
+- In-memory payment repository
+- Domain-driven service layer
+- Typed domain error handling
+- Health endpoint
+- Payment management APIs
 
 ---
 
@@ -46,7 +49,7 @@ The project focuses on understanding backend architecture, functional programmin
 sbt run
 ```
 
-The application starts an HTTP server on port **8080**.
+The application starts an HTTP server on **localhost:8080**.
 
 ---
 
@@ -77,7 +80,7 @@ Creates a new payment.
 }
 ```
 
-**Response**
+**Successful Response**
 
 ```json
 {
@@ -90,7 +93,32 @@ Creates a new payment.
 
 ---
 
-### Swagger UI
+### GET /payments
+
+Returns all payments.
+
+---
+
+### GET /payments/{paymentId}
+
+Returns a payment by its ID.
+
+---
+
+### Error Response
+
+Business errors return a structured response.
+
+```json
+{
+  "code": "404",
+  "message": "Payment Not Found"
+}
+```
+
+---
+
+## Swagger UI
 
 Interactive API documentation is available at:
 
@@ -103,23 +131,27 @@ http://localhost:8080/docs
 ## Current Architecture
 
 ```
-                  Browser
+                  Client
+                     │
+             HTTP Request
                      │
         ┌────────────┴────────────┐
         │                         │
-   GET /health             POST /payments
+   Health API              Payment APIs
         │                         │
         └────────────┬────────────┘
                      │
-             Tapir Endpoint
+             Tapir Endpoints
                      │
               Server Logic
                      │
-         ZioHttpInterpreter
+             Payment Service
                      │
-             ZIO HTTP Server
+          Payment Repository
                      │
-               HTTP Response
+        In-Memory Repository
+                     │
+             HTTP Response
 ```
 
 ---
@@ -143,10 +175,46 @@ src/
             │
             └── payment/
                 ├── api/
-                │   └── PaymentEndpoints.scala
+                │   ├── PaymentEndpoints.scala
+                │   ├── PaymentRoutes.scala
+                │   └── PaymentErrorMapper.scala
                 │
-                └── model/
-                    ├── CreatePaymentRequest.scala
-                    └── PaymentResponse.scala
+                ├── model/
+                │   ├── CreatePaymentRequest.scala
+                │   ├── PaymentResponse.scala
+                │   ├── PaymentError.scala
+                │   └── ErrorResponse.scala
+                │
+                ├── service/
+                │   └── PaymentService.scala
+                │
+                └── repository/
+                    ├── PaymentRepository.scala
+                    └── PaymentRepositoryLive.scala
 ```
 
+---
+
+## Current Architecture Flow
+
+```
+HTTP Request
+      │
+      ▼
+PaymentRoutes
+      │
+      ▼
+PaymentEndpoints
+      │
+      ▼
+PaymentService
+      │
+      ▼
+PaymentRepository
+      │
+      ▼
+PaymentRepositoryLive
+      │
+      ▼
+In-Memory Storage (ListBuffer)
+```
