@@ -9,10 +9,11 @@ import sttp.tapir.generic.auto.*
 import zio.*
 
 import java.util.UUID
+import paymentgateway.payment.service.PaymentService
 
 object PaymentEndpoints {
 
-  private val createPaymentRequest =
+  val createPaymentRequest =
     endpoint.post
       .in("payments")
       .in(jsonBody[CreatePaymentRequest])
@@ -22,15 +23,7 @@ object PaymentEndpoints {
     createPaymentRequest
       .zServerLogic { request =>
         {
-          val response =
-            PaymentResponse(
-              paymentId = UUID.randomUUID().toString(),
-              merchantId = request.merchantId,
-              amount = request.amount,
-              status = "PENDING"
-            )
-
-          ZIO.succeed(response)
+          PaymentService.createPayment(request).mapError(_ => ())
         }
       }
 
