@@ -10,17 +10,17 @@ object PaymentRoutes {
 
   private val createPaymentRoute =
     createPaymentRequest
-      .zServerLogic[Any] { request =>
+      .zServerLogic { payment =>
         {
           PaymentService
-            .createPayment(request)
+            .createPayment(payment)
             .mapError(toResponse)
         }
       }
 
   private val getPaymentByIdRoute =
     getPaymentByIdRequest
-      .zServerLogic[Any] { paymentId =>
+      .zServerLogic { paymentId =>
         {
           PaymentService
             .getPaymentById(paymentId)
@@ -30,17 +30,17 @@ object PaymentRoutes {
 
   private val getAllPaymentsRoute =
     getAllPaymentsRequest
-      .zServerLogic[Any] { _ =>
+      .zServerLogic { _ =>
         PaymentService
           .getAllPayments()
           .mapError(toResponse)
       }
 
-  val routes: List[ZServerEndpoint[Any, Any]] =
+  val routes =
     List(
-      createPaymentRoute.widen,
-      getPaymentByIdRoute.widen,
-      getAllPaymentsRoute.widen
+      createPaymentRoute,
+      getPaymentByIdRoute,
+      getAllPaymentsRoute
     )
 
 }

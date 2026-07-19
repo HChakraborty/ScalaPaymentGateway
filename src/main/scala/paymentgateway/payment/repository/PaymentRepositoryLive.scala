@@ -1,40 +1,49 @@
 package paymentgateway.payment.repository
 
-import zio.* 
+import zio.*
 
 import scala.collection.mutable.ListBuffer
 
 import paymentgateway.payment.model.*
 
+final case class PaymentRepositoryLive(
+    payments: ListBuffer[Payment]
+) extends PaymentRepository {
 
-object PaymentRepositoryLive extends PaymentRepository {
+  override def create(
+      payment: Payment
+  ): IO[PaymentError, Payment] = {
+    payments += payment
+    ZIO.succeed(payment)
+  }
 
-    private val payments =
-        ListBuffer.empty[PaymentResponse]
+  override def findById(
+      paymentId: String
+  ): IO[PaymentError, Payment] = {
 
-    override def create(
-        payment: PaymentResponse
-    ): IO[PaymentError, PaymentResponse] = {
-        payments += payment
+    payments.find(_.paymentId == paymentId) match
+      case Some(payment) =>
         ZIO.succeed(payment)
-    }
+      case None =>
+        ZIO.fail(PaymentError.PaymentNotFound)
 
-    override def findById(
-        paymentId: String
-    ): IO[PaymentError, PaymentResponse] = {
-       
-        payments.find(_.paymentId == paymentId) match
-            case Some(payment) =>
-                ZIO.succeed(payment)
-            case None => 
-                ZIO.fail(PaymentError.PaymentNotFound) 
-        
-    }
+  }
 
-    override def findAll(): IO[PaymentError, List[PaymentResponse]]= {
-        ZIO.succeed(
-            payments.toList
-        )
-    }
+  override def findAll(): IO[PaymentError, List[Payment]] = {
+    ZIO.succeed(
+      payments.toList
+    )
+  }
+
+}
+
+object PaymentRepositoryLive {
+
+  var layer: ULayer[PaymentRepository] =
+    ZLayer.succeed(
+      PaymentRepositoryLive(
+        ListBuffer.empty
+      )
+    )
 
 }

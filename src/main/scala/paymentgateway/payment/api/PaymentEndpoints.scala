@@ -18,18 +18,18 @@ object PaymentEndpoints {
       .in("payments")
       .in(jsonBody[CreatePaymentRequest])
       .errorOut(jsonBody[ErrorResponse])
-      .out(jsonBody[PaymentResponse])
+      .out(jsonBody[Payment])
 
   val getPaymentByIdRequest =
     endpoint.get
       .in("payments" / path[String]("paymentId"))
       .errorOut(jsonBody[ErrorResponse])
-      .out(jsonBody[PaymentResponse])
+      .out(jsonBody[Payment])
 
   val getAllPaymentsRequest =
     endpoint.get
       .in("payments")
       .errorOut(jsonBody[ErrorResponse])
-      .out(jsonBody[List[PaymentResponse]])
+      .out(jsonBody[List[Payment]])
 
 }

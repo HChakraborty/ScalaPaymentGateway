@@ -4,5 +4,7 @@ import zio.json.JsonCodec
 
 final case class CreatePaymentRequest(
     merchantId: String,
-    amount: BigDecimal
+    amount: BigDecimal,
+    currency: Currency,
+    paymentMethod: PaymentMethod
 ) derives JsonCodec
