@@ -1,8 +1,8 @@
 # Scala Payment Gateway
 
-A production-inspired backend project built with Scala 3 and the ZIO ecosystem to learn modern functional backend development by incrementally building a payment gateway.
+A production-inspired backend project built with **Scala 3** and the **ZIO ecosystem** to learn modern functional backend development by incrementally building a payment gateway.
 
-The project focuses on understanding backend architecture, functional programming, and enterprise application design rather than simply integrating technologies.
+The project focuses on understanding backend architecture, functional programming, dependency injection, and enterprise application design rather than simply integrating technologies.
 
 ---
 
@@ -13,12 +13,14 @@ The project focuses on understanding backend architecture, functional programmin
 - Automatic OpenAPI specification generation
 - Interactive Swagger UI documentation
 - Functional programming with ZIO
-- JSON serialization using ZIO JSON
-- Layered backend architecture
-- In-memory payment repository
+- Dependency Injection using ZLayer
+- Repository pattern
 - Domain-driven service layer
 - Typed domain error handling
-- Health endpoint
+- JSON serialization using ZIO JSON
+- Strongly typed domain models
+- In-memory payment repository
+- Health monitoring endpoint
 - Payment management APIs
 
 ---
@@ -49,7 +51,21 @@ The project focuses on understanding backend architecture, functional programmin
 sbt run
 ```
 
-The application starts an HTTP server on **localhost:8080**.
+The application starts on:
+
+```
+http://localhost:8080
+```
+
+---
+
+## Swagger UI
+
+Interactive API documentation:
+
+```
+http://localhost:8080/docs
+```
 
 ---
 
@@ -76,18 +92,26 @@ Creates a new payment.
 ```json
 {
   "merchantId": "merchant-001",
-  "amount": 999.99
+  "amount": 999.99,
+  "currency": "INR",
+  "paymentMethod": "UPI"
 }
 ```
 
-**Successful Response**
+**Response**
 
 ```json
 {
   "paymentId": "e0dbb26f-4b4d-4f1d-9e94-f8d08f8b6b95",
   "merchantId": "merchant-001",
-  "amount": 999.99,
-  "status": "PENDING"
+  "money": {
+    "amount": 999.99,
+    "currency": "INR"
+  },
+  "paymentMethod": "UPI",
+  "status": "PENDING",
+  "createdAt": "2026-07-20T10:15:30Z",
+  "updatedAt": "2026-07-20T10:15:30Z"
 }
 ```
 
@@ -105,9 +129,9 @@ Returns a payment by its ID.
 
 ---
 
-### Error Response
+## Error Response
 
-Business errors return a structured response.
+Business errors are returned as structured JSON.
 
 ```json
 {
@@ -116,14 +140,13 @@ Business errors return a structured response.
 }
 ```
 
----
+Example validation error:
 
-## Swagger UI
-
-Interactive API documentation is available at:
-
-```
-http://localhost:8080/docs
+```json
+{
+  "code": "400",
+  "message": "Invalid Amount"
+}
 ```
 
 ---
@@ -145,13 +168,41 @@ http://localhost:8080/docs
                      │
               Server Logic
                      │
-             Payment Service
+              Payment Service
                      │
-          Payment Repository
+             Payment Repository
                      │
-        In-Memory Repository
+         PaymentRepositoryLive
+                     │
+          In-Memory ListBuffer
                      │
              HTTP Response
+```
+
+---
+
+## Request Flow
+
+```
+HTTP Request
+      │
+      ▼
+PaymentRoutes
+      │
+      ▼
+PaymentService
+      │
+      ▼
+PaymentRepository
+      │
+      ▼
+PaymentRepositoryLive
+      │
+      ▼
+ListBuffer (In-Memory Storage)
+      │
+      ▼
+HTTP Response
 ```
 
 ---
@@ -181,40 +232,18 @@ src/
                 │
                 ├── model/
                 │   ├── CreatePaymentRequest.scala
-                │   ├── PaymentResponse.scala
+                │   ├── Currency.scala
+                │   ├── ErrorResponse.scala
+                │   ├── Money.scala
+                │   ├── Payment.scala
                 │   ├── PaymentError.scala
-                │   └── ErrorResponse.scala
+                │   ├── PaymentMethod.scala
+                │   └── PaymentStatus.scala
                 │
-                ├── service/
-                │   └── PaymentService.scala
+                ├── repository/
+                │   ├── PaymentRepository.scala
+                │   └── PaymentRepositoryLive.scala
                 │
-                └── repository/
-                    ├── PaymentRepository.scala
-                    └── PaymentRepositoryLive.scala
-```
-
----
-
-## Current Architecture Flow
-
-```
-HTTP Request
-      │
-      ▼
-PaymentRoutes
-      │
-      ▼
-PaymentEndpoints
-      │
-      ▼
-PaymentService
-      │
-      ▼
-PaymentRepository
-      │
-      ▼
-PaymentRepositoryLive
-      │
-      ▼
-In-Memory Storage (ListBuffer)
+                └── service/
+                    └── PaymentService.scala
 ```
